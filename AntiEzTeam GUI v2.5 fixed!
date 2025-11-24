@@ -1,0 +1,463 @@
+-- ANTI EZ TEAM GUI V 2.6
+local function createGUI()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local Lighting = game:GetService("Lighting")
+    local TweenService = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "AntiEzTeamGUI"
+    ScreenGui.Parent = playerGui
+
+    -- МИНИ-КНОПКА GUI (для скрытия/показа)
+    local ToggleGUIButton = Instance.new("TextButton")
+    ToggleGUIButton.Name = "ToggleGUIButton"
+    ToggleGUIButton.Size = UDim2.new(0, 60, 0, 30)
+    ToggleGUIButton.Position = UDim2.new(0, 10, 0, 10)
+    ToggleGUIButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+    ToggleGUIButton.BorderSizePixel = 1
+    ToggleGUIButton.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+    ToggleGUIButton.Text = "GUI"
+    ToggleGUIButton.TextColor3 = Color3.new(1, 1, 1)
+    ToggleGUIButton.TextScaled = true
+    ToggleGUIButton.ZIndex = 10
+    ToggleGUIButton.Parent = ScreenGui
+
+    -- ГОРИЗОНТАЛЬНЫЙ ГЛАВНЫЙ ФРЕЙМ
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.Size = UDim2.new(0, 900, 0, 550)
+    MainFrame.Position = UDim2.new(0.5, -450, 0.5, -275)
+    MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    MainFrame.BorderSizePixel = 2
+    MainFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+    MainFrame.Visible = true
+    MainFrame.Parent = ScreenGui
+
+    local TitleLabel = Instance.new("TextLabel")
+    TitleLabel.Name = "TitleLabel"
+    TitleLabel.Size = UDim2.new(1, 0, 0, 40)
+    TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+    TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
+    TitleLabel.Text = "ANTIEZTEAM GUI V 2.6 - FE DISABLED GAMES"
+    TitleLabel.TextColor3 = Color3.new(1, 1, 1)
+    TitleLabel.TextScaled = true
+    TitleLabel.Parent = MainFrame
+
+    -- БОЛЬШОЙ TEXTBOX ПО СЕРЕДИНЕ
+    local MainScriptBox = Instance.new("TextBox")
+    MainScriptBox.Name = "MainScriptBox"
+    MainScriptBox.Size = UDim2.new(0.7, 0, 0.7, 0)
+    MainScriptBox.Position = UDim2.new(0.15, 0, 0.15, 0)
+    MainScriptBox.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+    MainScriptBox.TextColor3 = Color3.new(1, 1, 1)
+    MainScriptBox.PlaceholderText = "Введите ваш скрипт здесь..."
+    MainScriptBox.Text = ""
+    MainScriptBox.TextXAlignment = Enum.TextXAlignment.Left
+    MainScriptBox.TextYAlignment = Enum.TextYAlignment.Top
+    MainScriptBox.TextWrapped = false
+    MainScriptBox.ClearTextOnFocus = false
+    MainScriptBox.MultiLine = true
+    MainScriptBox.TextScaled = false
+    MainScriptBox.TextSize = 14
+    MainScriptBox.ScrollBarThickness = 8
+    MainScriptBox.Parent = MainFrame
+
+    -- КНОПКА EXECUTE СПРАВА ВНИЗУ
+    local MainExecuteButton = Instance.new("TextButton")
+    MainExecuteButton.Name = "MainExecuteButton"
+    MainExecuteButton.Size = UDim2.new(0.15, 0, 0, 40)
+    MainExecuteButton.Position = UDim2.new(0.8, 0, 0.87, 0)
+    MainExecuteButton.BackgroundColor3 = Color3.new(0.4, 0.8, 0.2)
+    MainExecuteButton.Text = "EXECUTE"
+    MainExecuteButton.TextColor3 = Color3.new(1, 1, 1)
+    MainExecuteButton.TextScaled = true
+    MainExecuteButton.Parent = MainFrame
+
+    -- КНОПКА ПОКАЗАТЬ/СКРЫТЬ КНОПКИ СЛЕВА
+    local ToggleButtonsButton = Instance.new("TextButton")
+    ToggleButtonsButton.Name = "ToggleButtonsButton"
+    ToggleButtonsButton.Size = UDim2.new(0.12, 0, 0, 30)
+    ToggleButtonsButton.Position = UDim2.new(0.02, 0, 0.87, 0)
+    ToggleButtonsButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.6)
+    ToggleButtonsButton.Text = "ПОКАЗАТЬ КНОПКИ"
+    ToggleButtonsButton.TextColor3 = Color3.new(1, 1, 1)
+    ToggleButtonsButton.TextScaled = true
+    ToggleButtonsButton.Parent = MainFrame
+
+    -- ФРЕЙМ ДЛЯ КНОПОК (изначально скрыт)
+    local ButtonsFrame = Instance.new("Frame")
+    ButtonsFrame.Name = "ButtonsFrame"
+    ButtonsFrame.Size = UDim2.new(0.12, 0, 0.7, 0)
+    ButtonsFrame.Position = UDim2.new(0.02, 0, 0.15, 0)
+    ButtonsFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+    ButtonsFrame.BorderSizePixel = 1
+    ButtonsFrame.BorderColor3 = Color3.new(0.4, 0.4, 0.4)
+    ButtonsFrame.Visible = false
+    ButtonsFrame.Parent = MainFrame
+
+    -- SCROLLING FRAME ДЛЯ КНОПОК
+    local ButtonsScrollingFrame = Instance.new("ScrollingFrame")
+    ButtonsScrollingFrame.Name = "ButtonsScrollingFrame"
+    ButtonsScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+    ButtonsScrollingFrame.Position = UDim2.new(0, 0, 0, 0)
+    ButtonsScrollingFrame.BackgroundTransparency = 1
+    ButtonsScrollingFrame.ScrollBarThickness = 6
+    ButtonsScrollingFrame.Parent = ButtonsFrame
+
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Padding = UDim.new(0, 5)
+    UIListLayout.Parent = ButtonsScrollingFrame
+
+    -- СПИСОК ВСЕХ КНОПОК
+    local buttonList = {
+        {"FE CADUCUS", Color3.new(0.8, 0.2, 0.2), function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/XJeBNe0s"))()
+        end},
+        {"NATURAL DISASTER", Color3.new(0.2, 0.6, 0.2), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/fwwafwfaf"))()
+        end},
+        {"INFINITY YIELD", Color3.new(0.2, 0.2, 0.8), function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        end},
+        {"REMOTE SPY", Color3.new(0.7, 0.3, 0.9), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/78n/SimpleSpy/main/SimpleSpySource.lua"))()
+        end},
+        {"FE BYPASS", Color3.new(0.1, 0.7, 0.8), function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/1234567890"))()
+        end},
+        {"SERVERSIDE", Color3.new(0.9, 0.6, 0.1), function()
+            changeSkyColor()
+        end},
+        {"SCAN REMOTES", Color3.new(0.2, 0.2, 0.8), function()
+            for i,v in pairs(game:GetDescendants()) do
+                if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+                    print("Найден Remote: " .. v:GetFullName())
+                end
+            end
+        end},
+        {"ANTIEZTEAM DECAL", Color3.new(0.8, 0.4, 0.1), function()
+            local decalId = "rbxassetid://1234567890"
+            for i,v in pairs(workspace:GetDescendants()) do
+                if v:IsA("Part") and v.Name == "Baseplate" then
+                    local decal = Instance.new("Decal")
+                    decal.Texture = decalId
+                    decal.Face = Enum.NormalId.Top
+                    decal.Parent = v
+                end
+            end
+        end},
+        {"BTOOLS", Color3.new(0.6, 0.3, 0.8), function()
+            local tool1 = Instance.new("HopperBin")
+            tool1.BinType = Enum.BinType.Hammer
+            tool1.Parent = player.Backpack
+            
+            local tool2 = Instance.new("HopperBin")
+            tool2.BinType = Enum.BinType.Clone
+            tool2.Parent = player.Backpack
+            
+            local tool3 = Instance.new("HopperBin")
+            tool3.BinType = Enum.BinType.Grab
+            tool3.Parent = player.Backpack
+        end},
+        {"SUPER RING V4", Color3.new(0.9, 0.3, 0.5), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/super%20ring%20part%20v4"))()
+        end},
+        {"CUSTOM SCRIPT 1", Color3.new(0.4, 0.6, 0.2), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/0000001"))()
+        end},
+        {"CUSTOM SCRIPT 2", Color3.new(0.3, 0.4, 0.8), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/00000002"))()
+        end},
+        {"CUSTOM SCRIPT 3", Color3.new(0.7, 0.2, 0.6), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/00000003"))()
+        end},
+        {"CUSTOM SCRIPT 4", Color3.new(0.2, 0.5, 0.8), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/00000004"))()
+        end},
+        {"BROOKHAVEN", Color3.new(0.1, 0.6, 0.3), function()
+            game:GetService("TeleportService"):Teleport(4924922222)
+        end},
+        {"BLOX FRUITS", Color3.new(0.8, 0.4, 0.1), function()
+            game:GetService("TeleportService"):Teleport(2753915549)
+        end},
+        {"JOHN DOE", Color3.new(0.8, 0.1, 0.1), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/johndoe"))()
+        end},
+        {"ANTI GUI", Color3.new(0.1, 0.6, 0.3), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/antigui"))()
+        end},
+        {"FE SERVER ADMIN", Color3.new(0.2, 0.2, 0.8), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/feserveradmin"))()
+        end},
+        {"99 NIGHT FOREST", Color3.new(0.4, 0.1, 0.6), function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/antiezteam/-/refs/heads/main/99nightforest"))()
+        end}
+    }
+
+    -- СОЗДАЕМ КНОПКИ В SCROLLING FRAME
+    for i, buttonData in ipairs(buttonList) do
+        local buttonName, buttonColor, buttonFunction = buttonData[1], buttonData[2], buttonData[3]
+        
+        local button = Instance.new("TextButton")
+        button.Name = buttonName .. "Button"
+        button.Size = UDim2.new(1, -10, 0, 25)
+        button.Position = UDim2.new(0, 5, 0, (i-1)*30)
+        button.BackgroundColor3 = buttonColor
+        button.Text = buttonName
+        button.TextColor3 = Color3.new(1, 1, 1)
+        button.TextScaled = true
+        button.Parent = ButtonsScrollingFrame
+
+        button.MouseButton1Click:Connect(function()
+            print(buttonName .. " активирован!")
+            buttonFunction()
+        end)
+    end
+
+    -- ОБНОВЛЯЕМ РАЗМЕР SCROLLING FRAME
+    ButtonsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+
+    -- БОЛЬШАЯ КНОПКА "ВЫБРАТЬ ИГРУ"
+    local SelectGameButton = Instance.new("TextButton")
+    SelectGameButton.Name = "SelectGameButton"
+    SelectGameButton.Size = UDim2.new(0.15, 0, 0, 40)
+    SelectGameButton.Position = UDim2.new(0.63, 0, 0.87, 0)
+    SelectGameButton.BackgroundColor3 = Color3.new(0.9, 0.5, 0.1)
+    SelectGameButton.Text = "ВЫБРАТЬ ИГРУ"
+    SelectGameButton.TextColor3 = Color3.new(1, 1, 1)
+    SelectGameButton.TextScaled = true
+    SelectGameButton.Parent = MainFrame
+
+    -- ФУНКЦИЯ ДЛЯ SERVERSIDE КНОПКИ (меняет цвет неба)
+    local function changeSkyColor()
+        local originalAmbient = Lighting.Ambient
+        local originalOutdoor = Lighting.OutdoorAmbient
+        local originalBrightness = Lighting.Brightness
+        
+        Lighting.Ambient = Color3.new(1, 0, 0)
+        Lighting.OutdoorAmbient = Color3.new(1, 0, 0)
+        Lighting.Brightness = 2
+        
+        print("Небо изменено на красный! Должно быть видно всем игрокам")
+        
+        wait(10)
+        
+        Lighting.Ambient = originalAmbient
+        Lighting.OutdoorAmbient = originalOutdoor
+        Lighting.Brightness = originalBrightness
+        
+        print("Небо возвращено в нормальное состояние")
+    end
+
+    -- ФУНКЦИЯ ДЛЯ МЕНЮ ВЫБОРА ИГР
+    local function createGameSelectionMenu()
+        local Background = Instance.new("Frame")
+        Background.Name = "GameSelectionBackground"
+        Background.Size = UDim2.new(1, 0, 1, 0)
+        Background.Position = UDim2.new(0, 0, 0, 0)
+        Background.BackgroundColor3 = Color3.new(0, 0, 0)
+        Background.BackgroundTransparency = 0.3
+        Background.Parent = ScreenGui
+
+        local GameSelectionFrame = Instance.new("Frame")
+        GameSelectionFrame.Name = "GameSelectionFrame"
+        GameSelectionFrame.Size = UDim2.new(0, 600, 0, 400)
+        GameSelectionFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+        GameSelectionFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+        GameSelectionFrame.BorderSizePixel = 2
+        GameSelectionFrame.BorderColor3 = Color3.new(0.4, 0.4, 0.4)
+        GameSelectionFrame.Parent = Background
+
+        local SelectionTitle = Instance.new("TextLabel")
+        SelectionTitle.Name = "SelectionTitle"
+        SelectionTitle.Size = UDim2.new(1, 0, 0, 50)
+        SelectionTitle.Position = UDim2.new(0, 0, 0, 0)
+        SelectionTitle.BackgroundColor3 = Color3.new(0.3, 0.2, 0.4)
+        SelectionTitle.Text = "ВЫБЕРИТЕ ИГРУ (FE DISABLED)"
+        SelectionTitle.TextColor3 = Color3.new(1, 1, 1)
+        SelectionTitle.TextScaled = true
+        SelectionTitle.Parent = GameSelectionFrame
+
+        local gamesList = {
+            {"Старый Брукхейвен", 4924922222},
+            {"Обезумевший парикмахер", 142823291},
+            {"Заброшенный отель", 375138831},
+            {"Классный персонаж", 4848000000},
+            {"Присутствие зла", 292439477},
+            {"Старый админ хаус", 286090429},
+            {"Гостиница Роблоксов", 257770157},
+            {"Старый работающий экспресс", 2768379856}
+        }
+
+        local GamesScrollingFrame = Instance.new("ScrollingFrame")
+        GamesScrollingFrame.Name = "GamesScrollingFrame"
+        GamesScrollingFrame.Size = UDim2.new(0.9, 0, 0, 250)
+        GamesScrollingFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
+        GamesScrollingFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+        GamesScrollingFrame.BorderSizePixel = 1
+        GamesScrollingFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+        GamesScrollingFrame.ScrollBarThickness = 8
+        GamesScrollingFrame.Parent = GameSelectionFrame
+
+        local GamesUIListLayout = Instance.new("UIListLayout")
+        GamesUIListLayout.Parent = GamesScrollingFrame
+        GamesUIListLayout.Padding = UDim.new(0, 5)
+
+        for i, gameData in ipairs(gamesList) do
+            local gameName, gameId = gameData[1], gameData[2]
+            
+            local GameButton = Instance.new("TextButton")
+            GameButton.Name = gameName .. "Button"
+            GameButton.Size = UDim2.new(1, -10, 0, 40)
+            GameButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.3)
+            GameButton.Text = gameName
+            GameButton.TextColor3 = Color3.new(1, 1, 1)
+            GameButton.TextScaled = true
+            GameButton.Parent = GamesScrollingFrame
+
+            GameButton.MouseButton1Click:Connect(function()
+                print("Телепортируем в игру: " .. gameName)
+                game:GetService("TeleportService"):Teleport(gameId)
+            end)
+        end
+
+        local CloseButton = Instance.new("TextButton")
+        CloseButton.Name = "CloseButton"
+        CloseButton.Size = UDim2.new(0.4, 0, 0, 40)
+        CloseButton.Position = UDim2.new(0.3, 0, 0.85, 0)
+        CloseButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
+        CloseButton.Text = "ЗАКРЫТЬ"
+        CloseButton.TextColor3 = Color3.new(1, 1, 1)
+        CloseButton.TextScaled = true
+        CloseButton.Parent = GameSelectionFrame
+
+        CloseButton.MouseButton1Click:Connect(function()
+            Background:Destroy()
+        end)
+
+        wait(0.1)
+        GamesScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, GamesUIListLayout.AbsoluteContentSize.Y)
+    end
+
+    -- ФУНКЦИЯ ПЕРЕМЕЩЕНИЯ
+    local function makeDraggable(gui)
+        local dragging = false
+        local dragInput, dragStart, startPos
+
+        gui.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+                dragStart = input.Position
+                startPos = gui.Position
+
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+
+        gui.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                dragInput = input
+            end
+        end)
+
+        UserInputService.InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                local delta = input.Position - dragStart
+                gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end)
+    end
+
+    -- ФУНКЦИЯ ДЛЯ СКРЫТИЯ/ПОКАЗА GUI
+    local function toggleGUI()
+        if MainFrame.Visible then
+            local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -450, -1, -275)})
+            tween:Play()
+            
+            wait(0.3)
+            MainFrame.Visible = false
+            ToggleGUIButton.Text = "GUI +"
+            print("GUI скрыто")
+        else
+            MainFrame.Visible = true
+            local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -450, 0.5, -275)})
+            tween:Play()
+            
+            ToggleGUIButton.Text = "GUI -"
+            print("GUI показано")
+        end
+    end
+
+    -- ФУНКЦИЯ ДЛЯ ПОКАЗА/СКРЫТИЯ КНОПОК
+    local function toggleButtons()
+        if ButtonsFrame.Visible then
+            ButtonsFrame.Visible = false
+            ToggleButtonsButton.Text = "ПОКАЗАТЬ КНОПКИ"
+            MainScriptBox.Size = UDim2.new(0.7, 0, 0.7, 0)
+            MainScriptBox.Position = UDim2.new(0.15, 0, 0.15, 0)
+        else
+            ButtonsFrame.Visible = true
+            ToggleButtonsButton.Text = "СКРЫТЬ КНОПКИ"
+            MainScriptBox.Size = UDim2.new(0.55, 0, 0.7, 0)
+            MainScriptBox.Position = UDim2.new(0.17, 0, 0.15, 0)
+        end
+    end
+
+    -- ГОРЯЧИЕ КЛАВИШИ
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        if input.KeyCode == Enum.KeyCode.RightControl then
+            toggleGUI()
+        end
+    end)
+
+    makeDraggable(MainFrame)
+    makeDraggable(TitleLabel)
+    makeDraggable(ToggleGUIButton)
+
+    -- ОСНОВНЫЕ ФУНКЦИИ КНОПОК
+    MainExecuteButton.MouseButton1Click:Connect(function()
+        local scriptText = MainScriptBox.Text
+        if scriptText and scriptText ~= "" then
+            print("Выполняем скрипт из текстового поля...")
+            local success, errorMessage = pcall(function()
+                loadstring(scriptText)()
+            end)
+            if not success then
+                warn("Ошибка выполнения скрипта: " .. errorMessage)
+            end
+        else
+            print("Введите скрипт в текстовое поле!")
+        end
+    end)
+
+    SelectGameButton.MouseButton1Click:Connect(function()
+        print("Открываем меню выбора игр...")
+        createGameSelectionMenu()
+    end)
+
+    ToggleGUIButton.MouseButton1Click:Connect(function()
+        toggleGUI()
+    end)
+
+    ToggleButtonsButton.MouseButton1Click:Connect(function()
+        toggleButtons()
+    end)
+
+    print("ANTIEZTEAM GUI V 2.6 загружено!")
+    print("Большое текстовое поле по середине")
+    print("Кнопка 'ПОКАЗАТЬ КНОПКИ' для отображения всех функций")
+    print("Горячая клавиша: Right Control для скрытия GUI")
+end
+
+createGUI()
