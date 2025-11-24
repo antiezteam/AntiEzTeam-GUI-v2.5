@@ -1,4 +1,4 @@
--- ANTI EZ TEAM GUI V 2.6
+-- ANTI EZ TEAM GUI V 2.6 FIXED
 local function createGUI()
     local Players = game:GetService("Players")
     local player = Players.LocalPlayer
@@ -25,12 +25,12 @@ local function createGUI()
     ToggleGUIButton.ZIndex = 10
     ToggleGUIButton.Parent = ScreenGui
 
-    -- ГОРИЗОНТАЛЬНЫЙ ГЛАВНЫЙ ФРЕЙМ
+    -- ГОРИЗОНТАЛЬНЫЙ ГЛАВНЫЙ ФРЕЙМ (УМЕНЬШЕННЫЙ РАЗМЕР)
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 900, 0, 550)
-    MainFrame.Position = UDim2.new(0.5, -450, 0.5, -275)
-    MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    MainFrame.Size = UDim2.new(0, 800, 0, 500)  -- Уменьшил размер
+    MainFrame.Position = UDim2.new(0.5, -400, 0.5, -250)
+    MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)  -- Нормальный темный цвет
     MainFrame.BorderSizePixel = 2
     MainFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
     MainFrame.Visible = true
@@ -38,19 +38,19 @@ local function createGUI()
 
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Name = "TitleLabel"
-    TitleLabel.Size = UDim2.new(1, 0, 0, 40)
+    TitleLabel.Size = UDim2.new(1, 0, 0, 35)  -- Чуть меньше заголовок
     TitleLabel.Position = UDim2.new(0, 0, 0, 0)
-    TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)
-    TitleLabel.Text = "ANTIEZTEAM GUI V 2.6 - FE DISABLED GAMES"
+    TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.4)  -- Синий цвет
+    TitleLabel.Text = "ANTIEZTEAM GUI V 2.6"
     TitleLabel.TextColor3 = Color3.new(1, 1, 1)
     TitleLabel.TextScaled = true
     TitleLabel.Parent = MainFrame
 
-    -- БОЛЬШОЙ TEXTBOX ПО СЕРЕДИНЕ
+    -- БОЛЬШОЙ TEXTBOX ПО СЕРЕДИНЕ (УМЕНЬШЕННЫЙ)
     local MainScriptBox = Instance.new("TextBox")
     MainScriptBox.Name = "MainScriptBox"
-    MainScriptBox.Size = UDim2.new(0.7, 0, 0.7, 0)
-    MainScriptBox.Position = UDim2.new(0.15, 0, 0.15, 0)
+    MainScriptBox.Size = UDim2.new(0.65, 0, 0.65, 0)  -- Уменьшил размер
+    MainScriptBox.Position = UDim2.new(0.17, 0, 0.15, 0)
     MainScriptBox.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
     MainScriptBox.TextColor3 = Color3.new(1, 1, 1)
     MainScriptBox.PlaceholderText = "Введите ваш скрипт здесь..."
@@ -68,9 +68,9 @@ local function createGUI()
     -- КНОПКА EXECUTE СПРАВА ВНИЗУ
     local MainExecuteButton = Instance.new("TextButton")
     MainExecuteButton.Name = "MainExecuteButton"
-    MainExecuteButton.Size = UDim2.new(0.15, 0, 0, 40)
-    MainExecuteButton.Position = UDim2.new(0.8, 0, 0.87, 0)
-    MainExecuteButton.BackgroundColor3 = Color3.new(0.4, 0.8, 0.2)
+    MainExecuteButton.Size = UDim2.new(0.15, 0, 0, 35)
+    MainExecuteButton.Position = UDim2.new(0.8, 0, 0.85, 0)
+    MainExecuteButton.BackgroundColor3 = Color3.new(0.4, 0.8, 0.2)  -- Зеленый цвет
     MainExecuteButton.Text = "EXECUTE"
     MainExecuteButton.TextColor3 = Color3.new(1, 1, 1)
     MainExecuteButton.TextScaled = true
@@ -80,7 +80,7 @@ local function createGUI()
     local ToggleButtonsButton = Instance.new("TextButton")
     ToggleButtonsButton.Name = "ToggleButtonsButton"
     ToggleButtonsButton.Size = UDim2.new(0.12, 0, 0, 30)
-    ToggleButtonsButton.Position = UDim2.new(0.02, 0, 0.87, 0)
+    ToggleButtonsButton.Position = UDim2.new(0.02, 0, 0.85, 0)
     ToggleButtonsButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.6)
     ToggleButtonsButton.Text = "ПОКАЗАТЬ КНОПКИ"
     ToggleButtonsButton.TextColor3 = Color3.new(1, 1, 1)
@@ -90,7 +90,7 @@ local function createGUI()
     -- ФРЕЙМ ДЛЯ КНОПОК (изначально скрыт)
     local ButtonsFrame = Instance.new("Frame")
     ButtonsFrame.Name = "ButtonsFrame"
-    ButtonsFrame.Size = UDim2.new(0.12, 0, 0.7, 0)
+    ButtonsFrame.Size = UDim2.new(0.12, 0, 0.65, 0)  -- Уменьшил высоту
     ButtonsFrame.Position = UDim2.new(0.02, 0, 0.15, 0)
     ButtonsFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
     ButtonsFrame.BorderSizePixel = 1
@@ -203,8 +203,8 @@ local function createGUI()
         
         local button = Instance.new("TextButton")
         button.Name = buttonName .. "Button"
-        button.Size = UDim2.new(1, -10, 0, 25)
-        button.Position = UDim2.new(0, 5, 0, (i-1)*30)
+        button.Size = UDim2.new(1, -10, 0, 22)  -- Уменьшил высоту кнопок
+        button.Position = UDim2.new(0, 5, 0, (i-1)*27)
         button.BackgroundColor3 = buttonColor
         button.Text = buttonName
         button.TextColor3 = Color3.new(1, 1, 1)
@@ -223,15 +223,15 @@ local function createGUI()
     -- БОЛЬШАЯ КНОПКА "ВЫБРАТЬ ИГРУ"
     local SelectGameButton = Instance.new("TextButton")
     SelectGameButton.Name = "SelectGameButton"
-    SelectGameButton.Size = UDim2.new(0.15, 0, 0, 40)
-    SelectGameButton.Position = UDim2.new(0.63, 0, 0.87, 0)
+    SelectGameButton.Size = UDim2.new(0.15, 0, 0, 35)
+    SelectGameButton.Position = UDim2.new(0.63, 0, 0.85, 0)
     SelectGameButton.BackgroundColor3 = Color3.new(0.9, 0.5, 0.1)
     SelectGameButton.Text = "ВЫБРАТЬ ИГРУ"
     SelectGameButton.TextColor3 = Color3.new(1, 1, 1)
     SelectGameButton.TextScaled = true
     SelectGameButton.Parent = MainFrame
 
-    -- ФУНКЦИЯ ДЛЯ SERVERSIDE КНОПКИ (меняет цвет неба)
+    -- ФУНКЦИЯ ДЛЯ SERVERSIDE КНОПКИ
     local function changeSkyColor()
         local originalAmbient = Lighting.Ambient
         local originalOutdoor = Lighting.OutdoorAmbient
@@ -241,7 +241,7 @@ local function createGUI()
         Lighting.OutdoorAmbient = Color3.new(1, 0, 0)
         Lighting.Brightness = 2
         
-        print("Небо изменено на красный! Должно быть видно всем игрокам")
+        print("Небо изменено на красный!")
         
         wait(10)
         
@@ -264,8 +264,8 @@ local function createGUI()
 
         local GameSelectionFrame = Instance.new("Frame")
         GameSelectionFrame.Name = "GameSelectionFrame"
-        GameSelectionFrame.Size = UDim2.new(0, 600, 0, 400)
-        GameSelectionFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+        GameSelectionFrame.Size = UDim2.new(0, 500, 0, 350)  -- Уменьшил размер
+        GameSelectionFrame.Position = UDim2.new(0.5, -250, 0.5, -175)
         GameSelectionFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
         GameSelectionFrame.BorderSizePixel = 2
         GameSelectionFrame.BorderColor3 = Color3.new(0.4, 0.4, 0.4)
@@ -273,10 +273,10 @@ local function createGUI()
 
         local SelectionTitle = Instance.new("TextLabel")
         SelectionTitle.Name = "SelectionTitle"
-        SelectionTitle.Size = UDim2.new(1, 0, 0, 50)
+        SelectionTitle.Size = UDim2.new(1, 0, 0, 40)
         SelectionTitle.Position = UDim2.new(0, 0, 0, 0)
         SelectionTitle.BackgroundColor3 = Color3.new(0.3, 0.2, 0.4)
-        SelectionTitle.Text = "ВЫБЕРИТЕ ИГРУ (FE DISABLED)"
+        SelectionTitle.Text = "ВЫБЕРИТЕ ИГРУ"
         SelectionTitle.TextColor3 = Color3.new(1, 1, 1)
         SelectionTitle.TextScaled = true
         SelectionTitle.Parent = GameSelectionFrame
@@ -285,16 +285,13 @@ local function createGUI()
             {"Старый Брукхейвен", 4924922222},
             {"Обезумевший парикмахер", 142823291},
             {"Заброшенный отель", 375138831},
-            {"Классный персонаж", 4848000000},
             {"Присутствие зла", 292439477},
-            {"Старый админ хаус", 286090429},
-            {"Гостиница Роблоксов", 257770157},
-            {"Старый работающий экспресс", 2768379856}
+            {"Старый админ хаус", 286090429}
         }
 
         local GamesScrollingFrame = Instance.new("ScrollingFrame")
         GamesScrollingFrame.Name = "GamesScrollingFrame"
-        GamesScrollingFrame.Size = UDim2.new(0.9, 0, 0, 250)
+        GamesScrollingFrame.Size = UDim2.new(0.9, 0, 0, 200)  -- Уменьшил высоту
         GamesScrollingFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
         GamesScrollingFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
         GamesScrollingFrame.BorderSizePixel = 1
@@ -311,7 +308,7 @@ local function createGUI()
             
             local GameButton = Instance.new("TextButton")
             GameButton.Name = gameName .. "Button"
-            GameButton.Size = UDim2.new(1, -10, 0, 40)
+            GameButton.Size = UDim2.new(1, -10, 0, 35)
             GameButton.BackgroundColor3 = Color3.new(0.2, 0.2, 0.3)
             GameButton.Text = gameName
             GameButton.TextColor3 = Color3.new(1, 1, 1)
@@ -326,8 +323,8 @@ local function createGUI()
 
         local CloseButton = Instance.new("TextButton")
         CloseButton.Name = "CloseButton"
-        CloseButton.Size = UDim2.new(0.4, 0, 0, 40)
-        CloseButton.Position = UDim2.new(0.3, 0, 0.85, 0)
+        CloseButton.Size = UDim2.new(0.4, 0, 0, 35)
+        CloseButton.Position = UDim2.new(0.3, 0, 0.8, 0)
         CloseButton.BackgroundColor3 = Color3.new(0.8, 0.2, 0.2)
         CloseButton.Text = "ЗАКРЫТЬ"
         CloseButton.TextColor3 = Color3.new(1, 1, 1)
@@ -379,21 +376,19 @@ local function createGUI()
     local function toggleGUI()
         if MainFrame.Visible then
             local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -450, -1, -275)})
+            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -400, -1, -250)})
             tween:Play()
             
             wait(0.3)
             MainFrame.Visible = false
             ToggleGUIButton.Text = "GUI +"
-            print("GUI скрыто")
         else
             MainFrame.Visible = true
             local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -450, 0.5, -275)})
+            local tween = TweenService:Create(MainFrame, tweenInfo, {Position = UDim2.new(0.5, -400, 0.5, -250)})
             tween:Play()
             
             ToggleGUIButton.Text = "GUI -"
-            print("GUI показано")
         end
     end
 
@@ -402,13 +397,13 @@ local function createGUI()
         if ButtonsFrame.Visible then
             ButtonsFrame.Visible = false
             ToggleButtonsButton.Text = "ПОКАЗАТЬ КНОПКИ"
-            MainScriptBox.Size = UDim2.new(0.7, 0, 0.7, 0)
-            MainScriptBox.Position = UDim2.new(0.15, 0, 0.15, 0)
+            MainScriptBox.Size = UDim2.new(0.65, 0, 0.65, 0)
+            MainScriptBox.Position = UDim2.new(0.17, 0, 0.15, 0)
         else
             ButtonsFrame.Visible = true
             ToggleButtonsButton.Text = "СКРЫТЬ КНОПКИ"
-            MainScriptBox.Size = UDim2.new(0.55, 0, 0.7, 0)
-            MainScriptBox.Position = UDim2.new(0.17, 0, 0.15, 0)
+            MainScriptBox.Size = UDim2.new(0.5, 0, 0.65, 0)
+            MainScriptBox.Position = UDim2.new(0.19, 0, 0.15, 0)
         end
     end
 
@@ -442,7 +437,6 @@ local function createGUI()
     end)
 
     SelectGameButton.MouseButton1Click:Connect(function()
-        print("Открываем меню выбора игр...")
         createGameSelectionMenu()
     end)
 
@@ -454,10 +448,8 @@ local function createGUI()
         toggleButtons()
     end)
 
-    print("ANTIEZTEAM GUI V 2.6 загружено!")
-    print("Большое текстовое поле по середине")
-    print("Кнопка 'ПОКАЗАТЬ КНОПКИ' для отображения всех функций")
-    print("Горячая клавиша: Right Control для скрытия GUI")
+    print("ANTIEZTEAM GUI V 2.6 FIXED загружено!")
+    print("Уменьшенный размер, нормальные цвета")
 end
 
 createGUI()
