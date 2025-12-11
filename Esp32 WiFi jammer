@@ -1,0 +1,39 @@
+#include "WiFi.h"
+
+// Максимальное количество сетей (ESP32 может до 15)
+#define MAX_NETWORKS 10
+
+// Список названий сетей
+const char* ssids[MAX_NETWORKS] = {
+  "Free WiFi",
+  "Starbucks Free",
+  "Airport WiFi",
+  "Hotel Guest",
+  "Public WiFi",
+  "AndroidAP",
+  "iPhone",
+  "TP-LINK",
+  "Xiaomi",
+  "HackNet"
+};
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_AP);
+  
+  // Создаем несколько точек доступа
+  for(int i = 0; i < MAX_NETWORKS; i++) {
+    WiFi.softAP(ssids[i], NULL, i+1); // Канал i+1, без пароля
+    Serial.print("Created: ");
+    Serial.println(ssids[i]);
+  }
+  
+  Serial.println("\nAll networks created!");
+  Serial.print("ESP32 IP: ");
+  Serial.println(WiFi.softAPIP());
+}
+
+void loop() {
+  // Поддерживаем сети активными
+  delay(1000);
+}
